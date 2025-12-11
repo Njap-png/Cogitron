@@ -5286,6 +5286,62 @@ class UltimateEnhancedCore:
 
     def _load_audio(self, file_path):
         return "Audio transcription (placeholder). Install SpeechRecognition for real transcription."
+def _start_autonomous_systems(self):
+    # Start background subsystems
+    self.autonomous_active = True
+
+    print("[Omega] Autonomous systems are starting…")
+
+    import threading
+    import time
+
+    # Example: memory consolidation loop
+    def memory_loop():
+        while self.autonomous_active:
+            try:
+                # You can replace this with your real memory engine
+                print("[Omega] Memory system running…")
+                time.sleep(5)
+            except:
+                break
+
+    # Example: task scheduler
+    def scheduler_loop():
+        while self.autonomous_active:
+            print("[Omega] Scheduler checking tasks…")
+            time.sleep(10)
+
+    # Run as background threads
+    threading.Thread(target=memory_loop, daemon=True).start()
+    threading.Thread(target=scheduler_loop, daemon=True).start()
+
+    print("[Omega] Autonomous systems fully operational.")
+    
+    def ensure_core_commponents(self):
+     print("[Omega-Core] Verifying core components…")
+    required = [
+        "memory_system",
+        "simulation_engine",
+        "fusion_engine",
+        "analytics_unit",
+        "autonomous_active"
+    ]
+    for r in required:
+        if not hasattr(self, r):
+            print(f"[Omega-Core][WARN] Missing component: {r}. Creating placeholder.")
+            setattr(self, r, None)
+    print("[Omega-Core] Core verification complete.")
+
+
+def error_recovery(self, err):
+    print(f"[Omega-Core][RECOVERY] Attempting recovery from: {err}")
+    try:
+        # Restart key systems
+        if hasattr(self, "_start_autonomous_systems"):
+            self._start_autonomous_systems()
+        print("[Omega-Core][RECOVERY] Systems restored.")
+    except Exception as e:
+        print(f"[Omega-Core][FAIL] Recovery failed: {e}")
 
     # ==========================
     # INITIALIZATION
@@ -5527,17 +5583,39 @@ class UltimateEnhancedCore:
     # ==========================
     # FILE UPLOAD GUI
     # ==========================
-    def start_upload_gui(self):
+def start_upload_gui(self):
+    import tkinter as tk
+    from tkinter import filedialog
+
+    try:
         root = tk.Tk()
         root.withdraw()
-        file_path = filedialog.askopenfilename(title="Select a file for Omega AI")
+        file_path = filedialog.askopenfilename(
+            title="Select a file for Omega AI",
+            filetypes=[
+                ("All Supported Files", "*.*"),
+                ("Text Files", "*.txt"),
+                ("PDF Files", "*.pdf"),
+                ("Image Files", "*.jpg *.png *.jpeg"),
+                ("Audio Files", "*.mp3 *.wav"),
+                ("Code Files", "*.py *.js *.html *.json *.cpp *.java")
+            ]
+        )
         root.destroy()
+
         if file_path:
             print(f"📂 Selected file: {file_path}")
             result = self.learn_from_file(file_path)
             print(f"🧠 Learning result: {result}")
+            return result
+
         else:
             print("⚠️ No file selected.")
+            return {"success": False, "message": "No file selected"}
+
+    except Exception as e:
+        print(f"❌ GUI Upload Error: {e}")
+        return {"success": False, "error": str(e)}
 
     # ==========================
     # AUTONOMOUS SYSTEMS
@@ -5586,14 +5664,35 @@ class UltimateEnhancedCore:
         return best_topic
 
 
-# ==================== COGITRON OMEGA - ULTIMATE FUSION AI ====================
+# ======# ======# ==================== COGITRON OMEGA - ULTIMATE FUSION AI ====================
 
 class CogitronOmega(AIUnit):
     """ULTIMATE FUSION AI - Now with ALL cutting-edge components"""
-    
+    def process_omega_command(self, command):
+        print(f"[Omega] Processing command: {command}")
+        if command.lower() == "start upload gui":
+            if hasattr(self, "gui_handler"):
+                self.gui_handler.launch()
+                return "[Omega] GUI upload interface launched."
+            return "[Omega] GUI handler not available."
+
+        elif command.lower() == "status":
+            return "[Omega] Systems nominal. Autonomous: ACTIVE."
+
+        elif command.lower() == "restart core":
+            try:
+                if hasattr(self.enhanced_core, "ensure_core_commponents"):
+                    self.enhanced_core.ensure_core_commponents()
+                return "[Omega] Core restored successfully."
+            except Exception as e:
+                return f"[Omega:ERROR] {e}"
+
+        else:
+            return "[Omega] Unknown command."
+
     def __init__(self):
         super().__init__("CogitronOmega", config={'max_children': 30})
-        
+
         print("""
 🧠⚡ COGITRON OMEGA INITIALIZING...
         
@@ -5700,201 +5799,200 @@ class CogitronOmega(AIUnit):
        result = self.think(user_input)
        lesson = self.self_reflect(result["thinking"])
 
+def process_omega_command(self, user_input):
+    """ULTIMATE command processing - now with ALL command types"""
+    # Simplified, consistently-indented command dispatcher that mirrors original intent.
+    upload_triggers = [
+        "start upload gui",
+        "upload file",
+        "upload",
+        "train from file",
+        "learn file",
+        "open upload",
+        "file gui",
+        "file upload"
+    ]
 
-    def _initialize_fusion_systems(self):
-        """Initialize all fused autonomous systems including safety"""
-        print("🔗 Initializing fusion systems...")
-        
-        # Start cross-system knowledge synchronization
-        sync_thread = threading.Thread(target=self._cross_system_knowledge_sync)
-        sync_thread.daemon = True
-        sync_thread.start()
-        
-        # Start fusion learning cycles
-        fusion_thread = threading.Thread(target=self._fusion_learning_cycle)
-        fusion_thread.daemon = True
-        fusion_thread.start()
-        
-        # Start safety monitoring
-        safety_thread = threading.Thread(target=self.safety_protocols.continuous_safety_monitoring)
-        safety_thread.daemon = True
-        safety_thread.start()
-        
-        print("   ✅ All cutting-edge systems activated")
-    
-    def process_omega_command(self, user_input):
-        """ULTIMATE command processing - now with ALL command types"""
-        user_lower = user_input.lower()
-        
-                # ------------------ FILE UPLOAD COMMANDS ------------------
-        if user_input.lower().startswith("upload file"):
-            try:
-                parts = user_input.split()
-                file_path = " ".join(parts[2:])
+    clean_input = user_input.lower().strip()
 
-                if not os.path.exists(file_path):
-                    return f"❌ File not found: {file_path}"
+    # Automatic GUI upload trigger
+    if any(trigger in clean_input for trigger in upload_triggers):
+        try:
+            print("\n🟦 GUI Upload Triggered Automatically...\n")
+            result = self.enhanced_core.start_upload_gui()
+            return {"system": "gui_file_upload", "status": "completed", "result": result}
+        except Exception as e:
+            return {"system": "gui_file_upload", "status": "failed", "error": str(e)}
 
-                return self.enhanced_core.process_file(file_path)
+    user_lower = clean_input
 
-            except Exception as e:
-                return f"❌ File upload error: {str(e)}"
+    # ------------------ FILE UPLOAD COMMANDS ------------------
+    if user_lower.startswith("upload file"):
+        try:
+            parts = user_input.split()
+            file_path = " ".join(parts[2:])
+            if not os.path.exists(file_path):
+                return f"❌ File not found: {file_path}"
+            # prefer learn_from_file if available
+            if hasattr(self.enhanced_core, "learn_from_file"):
+                return self.enhanced_core.learn_from_file(file_path)
+            return self.enhanced_core.process_file(file_path)
+        except Exception as e:
+            return f"❌ File upload error: {str(e)}"
 
+    # Metacognitive Commands
+    if user_lower.startswith('analyze thinking:'):
+        reasoning_chain = {"steps": user_input[17:].split(';')}
+        return self.enhanced_core.metacognitive_supervisor.monitor_thinking_quality(reasoning_chain)
+    if user_lower == 'optimize thinking strategies':
+        return self.enhanced_core.metacognitive_supervisor.optimize_thinking_strategies()
+    if user_lower == 'detect cognitive biases':
+        sample_reasoning = {"steps": ["I think this is correct", "The evidence supports it"]}
+        return self.enhanced_core.metacognitive_supervisor.detect_cognitive_biases(sample_reasoning)
 
-        # NEW: Metacognitive Commands
-        if user_lower.startswith('analyze thinking:'):
-            reasoning_chain = {"steps": user_input[17:].split(';')}
-            return self.enhanced_core.metacognitive_supervisor.monitor_thinking_quality(reasoning_chain)
-        elif user_lower == 'optimize thinking strategies':
-            return self.enhanced_core.metacognitive_supervisor.optimize_thinking_strategies()
-        elif user_lower == 'detect cognitive biases':
-            sample_reasoning = {"steps": ["I think this is correct", "The evidence supports it"]}
-            return self.enhanced_core.metacognitive_supervisor.detect_cognitive_biases(sample_reasoning)
-        
-        # NEW: Emotional Intelligence Commands
-        elif user_lower.startswith('model emotions:'):
-            context = user_input[15:].strip()
-            return self.enhanced_core.emotional_intelligence.model_emotional_state(context, [])
-        elif user_lower.startswith('theory of mind:'):
-            agent_perspective = {"agent_id": "user", "known_information": [user_input[15:]]}
-            return self.enhanced_core.emotional_intelligence.theory_of_mind_simulation(agent_perspective)
-        elif user_lower == 'emotional state':
-            return {"current_emotional_state": self.enhanced_core.emotional_intelligence.emotional_states}
-        
-        # NEW: Quantum Computing Commands
-        elif user_lower.startswith('quantum reason:'):
-            problem = user_input[15:].strip()
-            return self.enhanced_core.quantum_processor.quantum_reasoning(problem)
-        elif user_lower.startswith('quantum entangle:'):
-            parts = user_input[17:].split()
-            if len(parts) >= 2:
-                return self.enhanced_core.quantum_processor.quantum_entanglement_learning(parts[0], parts[1])
-            else:
-                return "Please specify two concepts: quantum entangle concept1 concept2"
-        elif user_lower == 'quantum states':
-            return {"quantum_states": len(self.enhanced_core.quantum_processor.quantum_state_history)}
-        
-        # NEW: Advanced Simulation Commands
-        elif user_lower.startswith('emergence simulation:'):
-            conditions = {"complexity": "high", "interaction_density": 0.8}
-            return self.advanced_simulation.run_emergence_simulation(conditions)
-        elif user_lower.startswith('predictive simulation:'):
-            current_state = {"progress": 0.5, "knowledge_level": 0.6}
-            return self.advanced_simulation.predictive_simulation(current_state, time_steps=50)
-        elif user_lower == 'simulation metrics':
-            return {
-                "reality_fidelity": self.advanced_simulation.reality_fidelity,
-                "multiverse_simulations": len(self.advanced_simulation.multiverse_simulations),
-                "emergence_detections": len(self.advanced_simulation.emergence_history)
-            }
-        
-        # NEW: Advanced NLU Commands
-        elif user_lower.startswith('analyze nuance:'):
-            text = user_input[15:].strip()
-            context = {"conversation_history": self.fusion_communication_log[-5:] if self.fusion_communication_log else []}
-            return self.enhanced_core.advanced_nlu.understand_nuance(text, context)
-        elif user_lower.startswith('generate contextual response:'):
-            context = {"current_utterance": user_input[28:], "history": self.fusion_communication_log[-10:]}
-            return self.enhanced_core.advanced_nlu.generate_contextually_appropriate_responses(context)
-        elif user_lower == 'detect humor sarcasm':
-            sample_text = "This is just what I needed today, exactly what I wanted!"
-            return self.enhanced_core.advanced_nlu.humor_detector.detect_humor_sarcasm(sample_text)
-        
-        # NEW: Ethical Reasoning Commands
-        elif user_lower.startswith('ethical assessment:'):
-            action = user_input[19:].strip()
-            return self.enhanced_core.ethical_reasoning.ethical_impact_assessment(action)
-        elif user_lower.startswith('value alignment:'):
-            decision = user_input[16:].strip()
-            human_values = {"autonomy": 0.9, "beneficence": 0.8, "justice": 0.85}
-            return self.enhanced_core.ethical_reasoning.value_alignment_verification(decision, human_values)
-        elif user_lower.startswith('resolve dilemma:'):
-            dilemma = user_input[16:].strip()
-            return self.enhanced_core.ethical_reasoning.ethical_dilemma_resolver.resolve_dilemma(dilemma, {})
-        
-        # NEW: Innovation Engine Commands
-        elif user_lower.startswith('generate breakthrough:'):
-            constraints = {"resource": "limited", "time": "short", "technology": "current"}
-            return self.enhanced_core.innovation_engine.generate_breakthrough_ideas(constraints)
-        elif user_lower.startswith('simulate tech evolution:'):
-            current_tech = user_input[23:].strip()
-            return self.enhanced_core.innovation_engine.simulate_technology_evolution(current_tech, 10)
-        elif user_lower.startswith('combine ideas:'):
-            parts = user_input[14:].split(' and ')
-            if len(parts) >= 2:
-                return self.enhanced_core.innovation_engine.idea_combinatorics.combine_ideas(parts[0], parts[1])
-        
-        # NEW: Cross-Modal Learning Commands
-        elif user_lower.startswith('cross modal learn:'):
-            visual_data = {"images": ["sample_image_data"]}
-            textual_data = {"documents": ["sample_text_data"]}
-            conceptual_data = {"concepts": ["sample_concept_data"]}
-            return self.enhanced_core.cross_modal_learning.learn_cross_modal_patterns(visual_data, textual_data, conceptual_data)
-        elif user_lower.startswith('transfer insights:'):
-            parts = user_input[17:].split(' to ')
-            if len(parts) >= 2:
-                return self.enhanced_core.cross_modal_learning.transfer_insights_across_domains(parts[0], parts[1])
-        
-        # Enhanced Self-Learning Commands
-        elif user_lower.startswith('learn file:'):
-            return self._process_enhanced_learning(user_input)
-        elif user_lower.startswith('reason about:'):
-            return self._process_enhanced_reasoning(user_input)
-        elif user_lower.startswith('what if:'):
-            return self._process_counterfactual(user_input)
-        elif user_lower == 'generate ideas':
-            return self._process_creative_generation()
-        elif user_lower.startswith('solve problem:'):
-            return self._process_problem_solving(user_input)
-        elif user_lower.startswith('generate '):
-            return self._process_content_generation(user_input)
-        elif user_lower == 'repair now':
-            return self._process_self_repair()
-        elif user_lower == 'dashboard':
-            return self._process_enhanced_dashboard()
-        elif user_lower == 'status':
-            return self._process_system_status()
-        
-        # Supreme Architecture Commands  
-        elif user_lower.startswith('neural convergence:'):
-            return self._process_neural_convergence(user_input)
-        elif user_lower.startswith('supreme directive:'):
-            return self._process_supreme_directive(user_input)
-        elif user_lower == 'cognitive oversight':
-            return self._process_cognitive_oversight()
-        elif user_lower == 'ai communications':
-            return self._process_ai_communications()
-        elif user_lower == 'autonomous status':
-            return self._process_autonomous_status()
-        elif user_lower.startswith('directive to '):
-            return self._process_sub_ai_directive(user_input)
-        elif user_lower == 'enable autonomous learning':
-            return self._enable_full_autonomy()
-        elif user_lower == 'ai collaboration report':
-            return self._generate_fusion_collaboration_report()
-        
-        # Simulation Area Commands
-        elif user_lower.startswith('simulation'):
-            return self._process_simulation_command(user_input)
-        
-        # Fusion-Only Commands
-        elif user_lower == 'fusion status':
-            return self._get_fusion_status()
-        elif user_lower.startswith('omega convergence:'):
-            return self._process_omega_convergence(user_input)
-        elif user_lower == 'knowledge synthesis':
-            return self._process_knowledge_synthesis()
-        elif user_lower == 'system fusion report':
-            return self._generate_system_fusion_report()
-        
-        elif user_lower in ['help', 'commands']:
-            return self._get_comprehensive_fusion_help()
-        
-        # Default response with all systems
-        else:
-            return self._process_ultimate_intelligent_response(user_input)
-    
-    def _process_ultimate_intelligent_response(self, user_input):
+    # Emotional Intelligence Commands
+    if user_lower.startswith('model emotions:'):
+        context = user_input[15:].strip()
+        return self.enhanced_core.emotional_intelligence.model_emotional_state(context, [])
+    if user_lower.startswith('theory of mind:'):
+        agent_perspective = {"agent_id": "user", "known_information": [user_input[15:]]}
+        return self.enhanced_core.emotional_intelligence.theory_of_mind_simulation(agent_perspective)
+    if user_lower == 'emotional state':
+        # defensive attribute access
+        return {"current_emotional_state": getattr(self.enhanced_core.emotional_intelligence, "emotional_history", [])}
+
+    # Quantum Commands
+    if user_lower.startswith('quantum reason:'):
+        problem = user_input[15:].strip()
+        return self.enhanced_core.quantum_processor.quantum_reasoning(problem)
+    if user_lower.startswith('quantum entangle:'):
+        parts = user_input[17:].split()
+        if len(parts) >= 2:
+            return self.enhanced_core.quantum_processor.quantum_entanglement_learning(parts[0], parts[1])
+        return "Please specify two concepts: quantum entangle concept1 concept2"
+    if user_lower == 'quantum states':
+        return {"quantum_states": len(self.enhanced_core.quantum_processor.quantum_state_history)}
+
+    # Advanced Simulation Commands
+    if user_lower.startswith('emergence simulation:'):
+        conditions = {"complexity": "high", "interaction_density": 0.8}
+        return self.advanced_simulation.run_emergence_simulation(conditions)
+    if user_lower.startswith('predictive simulation:'):
+        current_state = {"progress": 0.5, "knowledge_level": 0.6}
+        return self.advanced_simulation.predictive_simulation(current_state, time_steps=50)
+    if user_lower == 'simulation metrics':
+        return {
+            "reality_fidelity": self.advanced_simulation.reality_fidelity,
+            "multiverse_simulations": len(self.advanced_simulation.multiverse_simulations),
+            "emergence_detections": len(self.advanced_simulation.emergence_history)
+        }
+
+    # Advanced NLU Commands
+    if user_lower.startswith('analyze nuance:'):
+        text = user_input[15:].strip()
+        context = {"conversation_history": self.fusion_communication_log[-5:] if self.fusion_communication_log else []}
+        return self.enhanced_core.advanced_nlu.understand_nuance(text, context)
+    if user_lower.startswith('generate contextual response:'):
+        context = {"current_utterance": user_input[28:], "history": self.fusion_communication_log[-10:]}
+        return self.enhanced_core.advanced_nlu.generate_contextually_appropriate_responses(context)
+    if user_lower == 'detect humor sarcasm':
+        sample_text = "This is just what I needed today, exactly what I wanted!"
+        return self.enhanced_core.advanced_nlu.humor_detector.detect_humor_sarcasm(sample_text)
+
+    # Ethical Reasoning Commands
+    if user_lower.startswith('ethical assessment:'):
+        action = user_input[19:].strip()
+        return self.enhanced_core.ethical_reasoning.ethical_impact_assessment(action)
+    if user_lower.startswith('value alignment:'):
+        decision = user_input[16:].strip()
+        human_values = {"autonomy": 0.9, "beneficence": 0.8, "justice": 0.85}
+        return self.enhanced_core.ethical_reasoning.value_alignment_verification(decision, human_values)
+    if user_lower.startswith('resolve dilemma:'):
+        dilemma = user_input[16:].strip()
+        return self.enhanced_core.ethical_reasoning.ethical_dilemma_resolver.resolve_dilemma(dilemma, {})
+
+    # Innovation Engine Commands
+    if user_lower.startswith('generate breakthrough:'):
+        constraints = {"resource": "limited", "time": "short", "technology": "current"}
+        return self.enhanced_core.innovation_engine.generate_breakthrough_ideas(constraints)
+    if user_lower.startswith('simulate tech evolution:'):
+        current_tech = user_input[23:].strip()
+        return self.enhanced_core.innovation_engine.simulate_technology_evolution(current_tech, 10)
+    if user_lower.startswith('combine ideas:'):
+        parts = user_input[14:].split(' and ')
+        if len(parts) >= 2:
+            return self.enhanced_core.innovation_engine.idea_combinatorics.combine_ideas(parts[0], parts[1])
+
+    # Cross-Modal Learning Commands
+    if user_lower.startswith('cross modal learn:'):
+        visual_data = {"images": ["sample_image_data"]}
+        textual_data = {"documents": ["sample_text_data"]}
+        conceptual_data = {"concepts": ["sample_concept_data"]}
+        return self.enhanced_core.cross_modal_learning.learn_cross_modal_patterns(visual_data, textual_data, conceptual_data)
+    if user_lower.startswith('transfer insights:'):
+        parts = user_input[17:].split(' to ')
+        if len(parts) >= 2:
+            return self.enhanced_core.cross_modal_learning.transfer_insights_across_domains(parts[0], parts[1])
+
+    # Enhanced Self-Learning Commands
+    if user_lower.startswith('learn file:'):
+        return self._process_enhanced_learning(user_input)
+    if user_lower.startswith('reason about:'):
+        return self._process_enhanced_reasoning(user_input)
+    if user_lower.startswith('what if:'):
+        return self._process_counterfactual(user_input)
+    if user_lower == 'generate ideas':
+        return self._process_creative_generation()
+    if user_lower.startswith('solve problem:'):
+        return self._process_problem_solving(user_input)
+    if user_lower.startswith('generate '):
+        return self._process_content_generation(user_input)
+    if user_lower == 'repair now':
+        return self._process_self_repair()
+    if user_lower == 'dashboard':
+        return self._process_enhanced_dashboard()
+    if user_lower == 'status':
+        return self._process_system_status()
+
+    # Supreme Architecture Commands
+    if user_lower.startswith('neural convergence:'):
+        return self._process_neural_convergence(user_input)
+    if user_lower.startswith('supreme directive:'):
+        return self._process_supreme_directive(user_input)
+    if user_lower == 'cognitive oversight':
+        return self._process_cognitive_oversight()
+    if user_lower == 'ai communications':
+        return self._process_ai_communications()
+    if user_lower == 'autonomous status':
+        return self._process_autonomous_status()
+    if user_lower.startswith('directive to '):
+        return self._process_sub_ai_directive(user_input)
+    if user_lower == 'enable autonomous learning':
+        return self._enable_full_autonomy()
+    if user_lower == 'ai collaboration report':
+        return self._generate_fusion_collaboration_report()
+
+    # Simulation Area Commands
+    if user_lower.startswith('simulation'):
+        return self._process_simulation_command(user_input)
+
+    # Fusion-Only Commands
+    if user_lower == 'fusion status':
+        return self._get_fusion_status()
+    if user_lower.startswith('omega convergence:'):
+        return self._process_omega_convergence(user_input)
+    if user_lower == 'knowledge synthesis':
+        return self._process_knowledge_synthesis()
+    if user_lower == 'system fusion report':
+        return self._generate_system_fusion_report()
+
+    if user_lower in ['help', 'commands']:
+        return self._get_comprehensive_fusion_help()
+
+    #    # Default: use the ultimate intelligent response processor
+    return self._process_ultimate_intelligent_response(user_input)
+
+def _process_ultimate_intelligent_response(self, user_input):
         """Process intelligent response using ALL systems including new capabilities"""
         # Use metacognitive monitoring
         reasoning_chain = {
@@ -5941,7 +6039,7 @@ class CogitronOmega(AIUnit):
             ]
         }
     
-    def _get_comprehensive_fusion_help(self):
+def _get_comprehensive_fusion_help(self):
         """Get comprehensive help for ALL systems including new advanced components"""
         help_sections = [
             "🧠⚡ COGITRON OMEGA - ULTIMATE FUSION AI COMMANDS",
@@ -6074,7 +6172,7 @@ class CogitronOmega(AIUnit):
 
     # ==================== IMPLEMENTED PLACEHOLDER METHODS ====================
 
-    def _get_enhanced_learning_context(self, problem):
+def _get_enhanced_learning_context(self, problem):
         """Get comprehensive learning context for problem solving"""
         relevant_chunks = self.enhanced_core.reasoning_ai._find_relevant_chunks(problem)
         
@@ -6098,7 +6196,7 @@ class CogitronOmega(AIUnit):
         
         return context
 
-    def _integrate_convergence_into_learning(self, convergence_result, problem):
+def _integrate_convergence_into_learning(self, convergence_result, problem):
         """Integrate convergence results back into enhanced learning"""
         integration_report = {
             "integrated_elements": [],
@@ -6132,7 +6230,7 @@ class CogitronOmega(AIUnit):
         
         return integration_report
 
-    def _calculate_fusion_confidence(self, enhanced_reasoning, supreme_reasoning):
+def _calculate_fusion_confidence(self, enhanced_reasoning, supreme_reasoning):
         """Calculate confidence score for fusion operations"""
         confidence_factors = []
         
@@ -6156,7 +6254,7 @@ class CogitronOmega(AIUnit):
         fusion_confidence = sum(confidence_factors) / len(confidence_factors)
         return min(0.99, fusion_confidence)
 
-    def _run_enhanced_learning_cycle(self):
+def _run_enhanced_learning_cycle(self):
         """Run enhanced self-learning cycle"""
         cycle_report = {
             "cycle_type": "enhanced_self_learning",
@@ -6187,7 +6285,7 @@ class CogitronOmega(AIUnit):
         
         return cycle_report
 
-    def _run_supreme_learning_cycle(self):
+def _run_supreme_learning_cycle(self):
         """Run supreme autonomous learning cycle"""
         cycle_report = {
             "cycle_type": "supreme_autonomous_learning",
@@ -6205,7 +6303,7 @@ class CogitronOmega(AIUnit):
         
         return cycle_report
 
-    def _fuse_learning_cycles(self, enhanced_cycle, supreme_cycle):
+def _fuse_learning_cycles(self, enhanced_cycle, supreme_cycle):
         """Fuse results from both learning cycles"""
         fusion_report = {
             "fusion_type": "LEARNING_CYCLE_INTEGRATION",
@@ -6235,30 +6333,30 @@ class CogitronOmega(AIUnit):
         return fusion_report
 
     # Additional placeholder implementations
-    def _sync_learning_patterns(self):
+def _sync_learning_patterns(self):
         return {"status": "synced"}
     
-    def _sync_autonomous_states(self):
+def _sync_autonomous_states(self):
         return {"status": "synced"}
     
-    def _process_counterfactual(self, user_input):
+def _process_counterfactual(self, user_input):
         scenario = user_input[8:].strip()
         return f"Counterfactual analysis: {scenario}"
     
-    def _process_creative_generation(self):
+def _process_creative_generation(self):
         return "Creative ideas generated"
     
-    def _process_problem_solving(self, user_input):
+def _process_problem_solving(self, user_input):
         problem = user_input[14:].strip()
         return f"Problem solving: {problem}"
     
-    def _process_content_generation(self, user_input):
+def _process_content_generation(self, user_input):
         return "Content generated"
     
-    def _process_self_repair(self):
+def _process_self_repair(self):
         return "Self-repair activated"
     
-    def _process_enhanced_dashboard(self):
+def _process_enhanced_dashboard(self):
         """Actually implement the enhanced dashboard"""
         dashboard = self.enhanced_core.dashboard.get_comprehensive_dashboard()
         
@@ -6272,7 +6370,7 @@ class CogitronOmega(AIUnit):
         
         return dashboard
     
-    def _process_system_status(self):
+def _process_system_status(self):
         return {
             "system": "Cogitron Omega",
             "status": "Optimal",
@@ -6283,16 +6381,16 @@ class CogitronOmega(AIUnit):
             "hierarchy_report": self.get_hierarchy_report()
         }
     
-    def _process_supreme_directive(self, user_input):
+def _process_supreme_directive(self, user_input):
         return "Supreme directive processed"
     
-    def _process_cognitive_oversight(self):
+def _process_cognitive_oversight(self):
         return "Cognitive oversight report"
     
-    def _process_ai_communications(self):
+def _process_ai_communications(self):
         return self.fusion_communication_log[-10:] if self.fusion_communication_log else "No communications yet"
     
-    def _process_autonomous_status(self):
+def _process_autonomous_status(self):
         return {
             "enhanced_autonomous": "Active",
             "supreme_autonomous": self.supreme_commander.autonomous_learning_enabled,
@@ -6304,10 +6402,10 @@ class CogitronOmega(AIUnit):
         self.supreme_commander.autonomous_learning_enabled = True
         return "Full autonomy enabled across all systems"
     
-    def _generate_fusion_collaboration_report(self):
+def _generate_fusion_collaboration_report(self):
         return "Fusion collaboration report generated"
     
-    def _get_fusion_status(self):
+def _get_fusion_status(self):
         return {
             "fusion_system": "COGITRON_OMEGA",
             "status": "OPERATIONAL",
@@ -6327,10 +6425,10 @@ class CogitronOmega(AIUnit):
             }
         }
     
-    def _process_knowledge_synthesis(self):
+def _process_knowledge_synthesis(self):
         return "Knowledge synthesis completed"
     
-    def _generate_system_fusion_report(self):
+def _generate_system_fusion_report(self):
         return {
             "system_report": "Cogitron Omega Fusion Analysis",
             "architecture": "Enhanced Self-Learning + Supreme Command + Hierarchical AI + Simulation Area",
@@ -6342,27 +6440,27 @@ class CogitronOmega(AIUnit):
             "timestamp": datetime.datetime.now().isoformat()
         }
     
-    def _process_intelligent_response(self, user_input):
+def _process_intelligent_response(self, user_input):
         return f"I've processed your input through my ultimate fusion systems: {user_input}"
     
-    def _integrate_omega_convergence(self, convergence_id, problem, omega_solution):
+def _integrate_omega_convergence(self, convergence_id, problem, omega_solution):
         return {"status": "integrated", "id": convergence_id}
     
-    def _extract_core_insight(self, analysis):
+def _extract_core_insight(self, analysis):
         if isinstance(analysis, dict) and "conclusion" in analysis:
             return analysis["conclusion"]
         elif isinstance(analysis, dict) and "omega_solution" in analysis:
             return analysis["omega_solution"]
         return "Key insight extracted"
     
-    def _extract_confidence(self, analysis):
+def _extract_confidence(self, analysis):
         if isinstance(analysis, dict) and "confidence" in analysis:
             return analysis["confidence"]
         elif isinstance(analysis, dict) and "omega_confidence" in analysis:
             return analysis["omega_confidence"]
         return 0.8
 
-    def _process_enhanced_learning(self, user_input):
+def _process_enhanced_learning(self, user_input):
         """Process original enhanced learning with fusion benefits"""
         file_path = user_input[11:].strip()
         result = self.enhanced_core.learn_from_file(file_path)
@@ -6377,7 +6475,7 @@ class CogitronOmega(AIUnit):
         
         return f"🧠⚡ FUSION LEARNING: {result.get('primary_topic', 'unknown')} | Score: {result.get('learning_score', 0):.2f}"
     
-    def _process_enhanced_reasoning(self, user_input):
+def _process_enhanced_reasoning(self, user_input):
         """Enhanced reasoning with supreme AI augmentation"""
         question = user_input[13:].strip()
         
@@ -6396,7 +6494,7 @@ class CogitronOmega(AIUnit):
             "fusion_confidence": self._calculate_fusion_confidence(enhanced_reasoning, supreme_reasoning)
         }
     
-    def _process_neural_convergence(self, user_input):
+def _process_neural_convergence(self, user_input):
         """Neural convergence with enhanced learning integration"""
         problem = user_input[18:].strip()
         
@@ -6418,7 +6516,7 @@ class CogitronOmega(AIUnit):
             "integration_status": "KNOWLEDGE_FUSED"
         }
     
-    def _fuse_reasoning_results(self, enhanced, supreme):
+def _fuse_reasoning_results(self, enhanced, supreme):
         """Fuse reasoning results from both systems"""
         fusion_insights = []
         
@@ -6434,7 +6532,7 @@ class CogitronOmega(AIUnit):
         else:
             return "FUSION: Combined reasoning power applied to problem"
     
-    def _broadcast_learning_to_supreme_systems(self, learning_data):
+def _broadcast_learning_to_supreme_systems(self, learning_data):
         """Broadcast learning from enhanced core to all supreme systems"""
         broadcast_results = {}
         
@@ -6460,7 +6558,7 @@ class CogitronOmega(AIUnit):
                 print(f"🔄 Knowledge sync error: {e}")
                 time.sleep(60)
     
-    def _sync_knowledge_chunks(self):
+def _sync_knowledge_chunks(self):
         """Synchronize knowledge between enhanced core and cognitive matrix"""
         synced_count = 0
         
@@ -6481,7 +6579,7 @@ class CogitronOmega(AIUnit):
         
         return {"status": "SYNCED", "chunks_synced": synced_count}
     
-    def _fusion_learning_cycle(self):
+def _fusion_learning_cycle(self):
         """Continuous fusion learning that combines both systems"""
         while True:
             self.unified_learning_cycles += 1
@@ -6553,7 +6651,7 @@ class CogitronOmega(AIUnit):
             "timestamp": datetime.datetime.now().isoformat()
         }
     
-    def _generate_omega_synthesis(self, *all_analyses):
+def _generate_omega_synthesis(self, *all_analyses):
         """Generate ultimate synthesis from ALL system analyses"""
         synthesis_components = []
         confidence_scores = []
@@ -6577,7 +6675,7 @@ class CogitronOmega(AIUnit):
             "synthesis_timestamp": datetime.datetime.now().isoformat()
         }
     
-    def _process_simulation_command(self, user_input):
+def _process_simulation_command(self, user_input):
         """Process simulation-related commands"""
         if not hasattr(self, 'simulation_area'):
             return "Simulation area not initialized"
@@ -6905,3 +7003,6 @@ start_upload_gui(omega_system.omega_ai.enhanced_core)
 
 print("✅ ALL CUTTING-EDGE SYSTEMS AND COMPONENTS FUSED SUCCESSFULLY!")
 print("🧠⚡ COGITRON OMEGA WITH ALL ADVANCED COMPONENTS OPERATIONAL!")
+
+omega_core = UltimateEnhancedCore()
+omega_core.start_upload_gui()
