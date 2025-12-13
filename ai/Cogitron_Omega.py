@@ -4,7 +4,7 @@ import datetime
 import threading
 from collections import defaultdict
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog,scrolledtext
 import os
 import time
 import datetime
@@ -15,6 +15,10 @@ import hashlib
 import re
 import uuid
 import logging
+import PyPDF2
+from PIL import Image
+import pytesseract
+import speech_recognition as sr
 from collections import Counter, defaultdict
 # ==================== IMPORTS AND DEPENDENCIES ====================
 import json
@@ -32,7 +36,7 @@ from collections import defaultdict, Counter
 from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass
 from enum import Enum
-
+from tkinter import scrolledtext
 # ==================== CORE DATA STRUCTURES ====================
 
 class TaskStatus(Enum):
@@ -1492,6 +1496,7 @@ class AdvancedReasoningAI:
     """Advanced reasoning with chain-of-thought and hypothesis testing"""
     
     def __init__(self, knowledge_chunks):
+        self.core=core
         self.knowledge_chunks = knowledge_chunks
         self.reasoning_chains = []
         self.hypotheses_tested = 0
@@ -2151,8 +2156,8 @@ class MetacognitiveSupervisor:
         return False
 
     def __init__(self, enhanced_core):
+        self.core=core
         self.enhanced_core = enhanced_core
-        # 'core' was undefined; use the provided enhanced_core reference instead
         self.core = enhanced_core
         self.thinking_process_monitor = ThinkingProcessTracker()
         self.cognitive_bias_detector = BiasDetectionSystem()
@@ -2166,7 +2171,6 @@ class MetacognitiveSupervisor:
         if not reasoning_steps:
             return False
         
-        # If the AI jumps to a conclusion too early
         for step in reasoning_steps:
             if "chosen hypothesis" in step.lower():
                 return True
@@ -2665,6 +2669,7 @@ class EmotionalIntelligenceEngine:
     """Understand and simulate emotional states, motivations, theory of mind"""
     
     def __init__(self, enhanced_core):
+        self.core=core
         self.enhanced_core = enhanced_core
         self.emotional_states = {"curiosity": 0.8, "confidence": 0.7, "caution": 0.6, "creativity": 0.75}
         self.empathy_model = EmpathyMappingSystem()
@@ -2913,6 +2918,7 @@ class QuantumCognitiveProcessor:
     """Quantum-inspired algorithms for exponential processing"""
     
     def __init__(self, enhanced_core):
+        self.core=core
         self.enhanced_core = enhanced_core
         self.quantum_superposition = {}  # Multiple simultaneous states
         self.entanglement_networks = {}  # Deep connection mapping
@@ -5042,6 +5048,7 @@ class InteractiveDemonstrations:
     """Interactive demonstrations of system capabilities"""
     
     def __init__(self, enhanced_core):
+        self.core=core
         self.enhanced_core = enhanced_core
     
     def demo_learning_evolution(self):
@@ -5060,6 +5067,7 @@ class KnowledgeGraphEnhancement:
     """Enhance knowledge graph with semantic relationships"""
     
     def __init__(self, knowledge_chunks):
+        self.core=core
         self.knowledge_chunks = knowledge_chunks
         self.semantic_network = {}
     
@@ -5079,6 +5087,7 @@ class AdvancedErrorRecovery:
     """Advanced error recovery and graceful degradation"""
     
     def __init__(self, enhanced_core):
+        self.core=core
         self.enhanced_core = enhanced_core
         # use the provided enhanced_core reference instead of undefined 'core'
         self.core = enhanced_core
@@ -5116,7 +5125,50 @@ class AdvancedFileUploader:
     
     def upload_file(self, file_path):
         """Upload and process file"""
-        return self.enhanced_core.learn_from_file(file_path)
+        file_paths = filedialog.askopenfilenames(
+            title="Select files to upload",
+            filetypes=[
+                ("Text files", "*.txt"),
+                ("PDF files", "*.pdf"),
+                ("Images", "*.jpg *.jpeg *.png"),
+                ("Audio files", "*.mp3 *.wav"),
+                ("All files", "*.*")
+            ]
+        )
+
+        if not file_paths:
+            return
+
+        for file_path in file_paths:
+            try:
+                result = core.learn_from_file(file_path)
+                log_msg = f"✅ {file_path}\n"
+                log_msg += f"   Primary Topic: {result.get('primary_topic', 'N/A')}\n"
+                log_msg += f"   Learning Score: {result.get('learning_score', 0):.2f}\n"
+                key_phrases = result.get('enhanced_analysis', {}).get('key_phrases', [])
+                log_msg += f"   Key Phrases: {', '.join(key_phrases[:5])}\n"
+                log_msg += "-"*50 + "\n"
+                log_area.insert(tk.END, log_msg)
+                log_area.yview(tk.END)
+            except Exception as e:
+                log_area.insert(tk.END, f"❌ Failed to process {file_path}: {e}\n")
+                log_area.yview(tk.END)
+def start_file_upload_gui():
+    root = tk.Tk()
+    root.title("Ultimate AI File Upload")
+    root.geometry("600x400")
+
+    label = tk.Label(root, text="Upload one or more files for AI processing:", font=("Arial", 12))
+    label.pack(pady=10)
+def upload_file():
+    upload_btn = tk.Button(root, text="Select Files", font=("Arial", 12), command=upload_files)
+    upload_btn.pack(pady=10)
+
+    log_area = scrolledtext.ScrolledText(root, width=70, height=15, font=("Courier", 10))
+    log_area.pack(pady=10)
+    log_area.insert(tk.END, "📂 Upload log initialized...\n")
+
+    root.mainloop()
 
 # ==================== COGITRON OMEGA SUB-AI SYSTEMS ====================
 
@@ -5271,83 +5323,39 @@ class UltimateEnhancedCore:
     # ==========================
     # FILE LOADER METHODS
     # ==========================
-    def _load_text(self, file_path):
-        try:
-            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                return f.read()
-        except Exception as e:
-            return f"Error reading text file: {e}"
-
-    def _load_pdf(self, file_path):
-        return "PDF content extracted (placeholder). Install PyPDF2 for real extraction."
-
-    def _load_image(self, file_path):
-        return "Image OCR text (placeholder). Install pytesseract for real OCR."
-
-    def _load_audio(self, file_path):
-        return "Audio transcription (placeholder). Install SpeechRecognition for real transcription."
-def _start_autonomous_systems(self):
-    # Start background subsystems
-    self.autonomous_active = True
-
-    print("[Omega] Autonomous systems are starting…")
-
-    import threading
-    import time
-
-    # Example: memory consolidation loop
-    def memory_loop():
-        while self.autonomous_active:
-            try:
-                # You can replace this with your real memory engine
-                print("[Omega] Memory system running…")
-                time.sleep(5)
-            except:
-                break
-
-    # Example: task scheduler
-    def scheduler_loop():
-        while self.autonomous_active:
-            print("[Omega] Scheduler checking tasks…")
-            time.sleep(10)
-
-    # Run as background threads
-    threading.Thread(target=memory_loop, daemon=True).start()
-    threading.Thread(target=scheduler_loop, daemon=True).start()
-
-    print("[Omega] Autonomous systems fully operational.")
-    
-    def ensure_core_commponents(self):
-     print("[Omega-Core] Verifying core components…")
-    required = [
-        "memory_system",
-        "simulation_engine",
-        "fusion_engine",
-        "analytics_unit",
-        "autonomous_active"
-    ]
-    for r in required:
-        if not hasattr(self, r):
-            print(f"[Omega-Core][WARN] Missing component: {r}. Creating placeholder.")
-            setattr(self, r, None)
-    print("[Omega-Core] Core verification complete.")
-
-
-def error_recovery(self, err):
-    print(f"[Omega-Core][RECOVERY] Attempting recovery from: {err}")
+def _load_pdf(self, file_path):
     try:
-        # Restart key systems
-        if hasattr(self, "_start_autonomous_systems"):
-            self._start_autonomous_systems()
-        print("[Omega-Core][RECOVERY] Systems restored.")
+        with open(file_path, 'rb') as f:
+            reader = PyPDF2.PdfReader(f)
+            text = ''
+            for page in reader.pages:
+                text += page.extract_text() or ''
+            return text
     except Exception as e:
-        print(f"[Omega-Core][FAIL] Recovery failed: {e}")
+        return f"Error reading PDF: {e}"
 
+def _load_image(self, file_path):
+    try:
+        image = Image.open(file_path)
+        text = pytesseract.image_to_string(image)
+        return text
+    except Exception as e:
+        return f"Error reading image: {e}"
+
+def _load_audio(self, file_path):
+    try:
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(file_path) as source:
+            audio_data = recognizer.record(source)
+            text = recognizer.recognize_google(audio_data)
+            return text
+    except Exception as e:
+        return f"Error transcribing audio: {e}"
     # ==========================
     # INITIALIZATION
     # ==========================
     def __init__(self):
-        # File processor (placeholder, implement process_file method)
+        # file_processor must exist elsewhere in your project
         self.file_processor = EnhancedFileProcessor()
 
         # Knowledge storage
@@ -5386,9 +5394,7 @@ def error_recovery(self, err):
             "total_learning": 0
         }
 
-        # ==========================
-        # Advanced & Cutting-Edge Components
-        # ==========================
+        # Advanced & Cutting-Edge Components (placeholders must be defined elsewhere)
         self.error_recovery = AdvancedErrorRecovery(self)
         self.metacognitive_supervisor = MetacognitiveSupervisor(self)
         self.emotional_intelligence = EmotionalIntelligenceEngine(self)
@@ -5411,10 +5417,10 @@ def error_recovery(self, err):
         self.memory_file = "ultimate_enhanced_memory.json"
         self.load_memory()
 
-        # Ensure core components
+        # Ensure core components now that everything is attached
         self.ensure_core_components()
 
-        # Start autonomous systems
+        # Start autonomous systems (safe starter)
         self._start_autonomous_systems()
 
     # ==========================
@@ -5441,6 +5447,9 @@ def error_recovery(self, err):
         missing = [c for c in components if not hasattr(self, c)]
         if missing:
             print(f"⚠️ Missing core components detected: {missing}")
+            # Optionally create placeholders to avoid future attribute errors:
+            for m in missing:
+                setattr(self, m, None)
         else:
             print("✅ All core components are present and initialized.")
 
@@ -5483,6 +5492,55 @@ def error_recovery(self, err):
             print(f"💾 Save error: {e}")
 
     # ==========================
+    # AUTONOMOUS SYSTEMS (starter)
+    # ==========================
+    def _start_autonomous_systems(self):
+        """Start small background loops (non-blocking)."""
+        if getattr(self, "autonomous_active", False):
+            # already running
+            return
+
+        self.autonomous_active = True
+        print("[Omega] Autonomous systems are starting…")
+
+        def memory_loop():
+            while self.autonomous_active:
+                try:
+                    # placeholder behavior — extend as needed
+                    # (do not block for long periods)
+                    # e.g., periodic save_memory or consolidation
+                    self.save_memory()
+                    time.sleep(5)
+                except Exception:
+                    break
+
+        def scheduler_loop():
+            while self.autonomous_active:
+                try:
+                    # placeholder scheduler tick
+                    time.sleep(10)
+                except Exception:
+                    break
+
+        threading.Thread(target=memory_loop, daemon=True).start()
+        threading.Thread(target=scheduler_loop, daemon=True).start()
+        print("[Omega] Autonomous systems fully operational.")
+
+    # ==========================
+    # SAFE ERROR RECOVERY HOOK
+    # ==========================
+    def recover_from_error(self, err):
+        print(f"[Omega-Core][RECOVERY] Attempting recovery from: {err}")
+        try:
+            # try to restart autonomous systems and re-ensure components
+            self.ensure_core_components()
+            if hasattr(self, "_start_autonomous_systems"):
+                self._start_autonomous_systems()
+            print("[Omega-Core][RECOVERY] Systems restored.")
+        except Exception as e:
+            print(f"[Omega-Core][FAIL] Recovery failed: {e}")
+
+    # ==========================
     # BIAS DETECTION
     # ==========================
     def _safe_bias_check(self, supervisor, method_name, data):
@@ -5522,11 +5580,12 @@ def error_recovery(self, err):
         if "error" in file_result:
             return file_result
 
-        primary_topic = self._determine_primary_topic_enhanced(file_result["content"])
+        content = file_result.get("content", "")
+        primary_topic = self._determine_primary_topic_enhanced(content)
         file_topics = file_result.get("topics", []) + [primary_topic]
 
         try:
-            bias_report = self.run_all_bias_checks(self.metacognitive_supervisor, file_result["content"])
+            bias_report = self.run_all_bias_checks(self.metacognitive_supervisor, content)
             print("🧠 Bias Analysis Report:", bias_report)
         except Exception as e:
             print(f"⚠️ Bias check failed, applying fallback: {e}")
@@ -5535,7 +5594,7 @@ def error_recovery(self, err):
         file_entry = {
             "file_name": file_result.get("file_name", "unknown"),
             "file_type": file_result.get("file_type", "unknown"),
-            "content_preview": file_result.get("content", "")[:150] + "...",
+            "content_preview": content[:150] + "...",
             "topics": file_result.get("topics", []),
             "key_phrases": file_result.get("key_phrases", []),
             "complexity_score": file_result.get("complexity_score", 0),
@@ -5547,8 +5606,9 @@ def error_recovery(self, err):
 
         if primary_topic not in self.knowledge_chunks:
             self.learning_stats["total_chunks"] += 1
+            self.knowledge_chunks[primary_topic] = {"files": [], "learning_score": 0.1}
 
-        existing_hashes = [f["file_hash"] for f in self.knowledge_chunks[primary_topic]["files"]]
+        existing_hashes = [f.get("file_hash") for f in self.knowledge_chunks[primary_topic]["files"]]
         if file_result.get("content_hash") not in existing_hashes:
             self.knowledge_chunks[primary_topic]["files"].append(file_entry)
 
@@ -5556,7 +5616,7 @@ def error_recovery(self, err):
         complexity_bonus = file_result.get("complexity_score", 0) * 0.1
         self.knowledge_chunks[primary_topic]["learning_score"] = min(
             1.0,
-            self.knowledge_chunks[primary_topic]["learning_score"] + base_strength + complexity_bonus
+            self.knowledge_chunks[primary_topic].get("learning_score", 0.1) + base_strength + complexity_bonus
         )
 
         self.learning_stats["files_processed"] += 1
@@ -5583,54 +5643,45 @@ def error_recovery(self, err):
     # ==========================
     # FILE UPLOAD GUI
     # ==========================
-def start_upload_gui(self):
-    import tkinter as tk
-    from tkinter import filedialog
+    def start_upload_gui(self):
+        import tkinter as tk
+        from tkinter import filedialog
 
-    try:
-        root = tk.Tk()
-        root.withdraw()
-        file_path = filedialog.askopenfilename(
-            title="Select a file for Omega AI",
-            filetypes=[
-                ("All Supported Files", "*.*"),
-                ("Text Files", "*.txt"),
-                ("PDF Files", "*.pdf"),
-                ("Image Files", "*.jpg *.png *.jpeg"),
-                ("Audio Files", "*.mp3 *.wav"),
-                ("Code Files", "*.py *.js *.html *.json *.cpp *.java")
-            ]
-        )
-        root.destroy()
+        try:
+            root = tk.Tk()
+            root.withdraw()
+            file_path = filedialog.askopenfilename(
+                title="Select a file for Omega AI",
+                filetypes=[
+                    ("All Supported Files", "*.*"),
+                    ("Text Files", "*.txt"),
+                    ("PDF Files", "*.pdf"),
+                    ("Image Files", "*.jpg *.png *.jpeg"),
+                    ("Audio Files", "*.mp3 *.wav"),
+                    ("Code Files", "*.py *.js *.html *.json *.cpp *.java")
+                ]
+            )
+            root.destroy()
 
-        if file_path:
-            print(f"📂 Selected file: {file_path}")
-            result = self.learn_from_file(file_path)
-            print(f"🧠 Learning result: {result}")
-            return result
+            if file_path:
+                print(f"📂 Selected file: {file_path}")
+                result = self.learn_from_file(file_path)
+                print(f"🧠 Learning result: {result}")
+                return result
 
-        else:
-            print("⚠️ No file selected.")
-            return {"success": False, "message": "No file selected"}
+            else:
+                print("⚠️ No file selected.")
+                return {"success": False, "message": "No file selected"}
 
-    except Exception as e:
-        print(f"❌ GUI Upload Error: {e}")
-        return {"success": False, "error": str(e)}
-
-    # ==========================
-    # AUTONOMOUS SYSTEMS
-    # ==========================
-    def _start_autonomous_systems(self):
-        print("🚀 STARTING ENHANCED AUTONOMOUS SYSTEMS...")
-        repair_msg = self.repair_ai.start_self_repair_monitoring()
-        print(f"   ✅ {repair_msg}")
-        print("🤖 All enhanced autonomous systems are now running!")
+        except Exception as e:
+            print(f"❌ GUI Upload Error: {e}")
+            return {"success": False, "error": str(e)}
 
     # ==========================
     # TOPIC ANALYSIS
     # ==========================
     def _determine_primary_topic_enhanced(self, content):
-        content_lower = content.lower()
+        content_lower = (content or "").lower()
         words = content_lower.split()
 
         topic_categories = {
@@ -5654,8 +5705,7 @@ def start_upload_gui(self):
                 best_score = weighted_score
                 best_topic = topic
 
-        secondary_topics = sorted(topic_scores.items(), key=lambda x: x[1], reverse=True)
-        secondary_topics = [t[0] for t in secondary_topics if t[1] > 0 and t[0] != best_topic]
+        secondary_topics = [t[0] for t in sorted(topic_scores.items(), key=lambda x: x[1], reverse=True) if t[1] > 0 and t[0] != best_topic]
 
         if best_topic not in self.knowledge_chunks:
             self.knowledge_chunks[best_topic] = {"files": [], "learning_score": 0.1}
@@ -5686,15 +5736,49 @@ class CogitronOmega(AIUnit):
                 return "[Omega] Core restored successfully."
             except Exception as e:
                 return f"[Omega:ERROR] {e}"
-
+        elif command=="start upload gui":
+             print("🧠⚡ Omega:Opening Upload GUI")
+             start_file_upload_gui()
         else:
             return "[Omega] Unknown command."
+# Exampl# Example command map (module-level fallback mapping to method names)
+command_command_map = {
+    "start upload gui": "start_upload_gui",
+    # add other commands here
+}
+def process_command(self, cmd):
+    cmd = cmd.lower().strip()
+    print(f"[Omega] Processing command: {cmd}")
+    # Prefer instance-level command_map, fallback to module-level command_map
+    cmd_map = getattr(self, "command_map", command_map)
+    if isinstance(cmd_map, dict):
+        mapping = cmd_map
+    else:
+        mapping = command_map
+    method_ref = mapping.get(cmd)
+    if method_ref:
+        # If the mapping stores a method name, resolve to bound method
+        if isinstance(method_ref, str):
+            func = getattr(self, method_ref, None)
+            if callable(func):
+                return func()
+        elif callable(method_ref):
+            try:
+                # try calling with self (for functions expecting instance)
+                return method_ref(self)
+            except TypeError:
+                return method_ref()
+    else:
+                print(f"🧠⚡ Omega: Command '{cmd}' not recognized.")
+# Remove# Removed stray invalid initializer call that caused a syntax error; class __init__ should be defined inside the CogitronOmega class.
+def __init__(self, name="CogitronOmega"):
+        self.name = name
+        self.ultimate_core = UltimateEnhancedCore()
+        self.enhanced_core = self.ultimate_Core()
 
-    def __init__(self):
-        super().__init__("CogitronOmega", config={'max_children': 30})
-
+        super().__init__(name)
         print("""
-🧠⚡ COGITRON OMEGA INITIALIZING...
+        🧠⚡ COGITRON OMEGA INITIALIZING...
         
     ULTIMATE FUSION ARCHITECTURE:
           COGITRON OMEGA (Supreme Fusion AI)
@@ -5704,39 +5788,31 @@ class CogitronOmega(AIUnit):
     Self-Learning   AI        Core       Net      NLU/Ethics
       Core                    AI         AI
         """)
-        self._knowledge_lock = threading.RLock()   # Use an RLock so nested acquisitions are safe
-        self._save_lock = threading.Lock()         # protect file saves (save_memory)
 
-        # Initialize ALL systems from both architectures
-        self.enhanced_core = UltimateEnhancedCore()
-        self.cognitive_matrix = EnhancedCognitiveMemoryMatrix()
-        
-        # Create sub-AIs using hierarchical AIUnit system
-        self.meta_mind = AutonomousMetaMindAI(self.cognitive_matrix, self)
-        self.oracle_core = AutonomousOracleCoreAI(self.cognitive_matrix, self) 
-        self.synapse_net = AutonomousSynapseNetAI(self.cognitive_matrix, self)
-        
-        # Create supreme commander with hierarchical structure
-        self.supreme_commander = SupremeCommanderAI(self, self.meta_mind, self.oracle_core, self.synapse_net)
-        
-        # Initialize Simulation Area as a modular, isolated component
-        self.simulation_area = SimulationArea(self)
-        
-        # Advanced Simulation Engine
-        self.advanced_simulation = AdvancedSimulationEngine(self.simulation_area)
-        
-        # Advanced components
-        self.safety_protocols = AdvancedSafetyProtocols(self)
-        self.file_uploader = AdvancedFileUploader(self.enhanced_core)
-        
-        # Fusion communication system
-        self.fusion_communication_log = []
-        self.cross_system_knowledge_bridge = {}
-        self.unified_learning_cycles = 0
-        # Example inside learn_from_file where you append a file:
-        print("🚀 Enhanced Self-Learning + Supreme Architecture + Simulation Area + All Advanced Components = ULTIMATE AI")
-    
-    def think(self, text):
+        # Start autonomous systems
+        if hasattr(self.enhanced_core, "_start_autonomous_systems"):
+            self.enhanced_core._start_autonomous_systems()
+
+        print(f"[{self.name}] Core systems initialized successfully.")
+# The following assignments reference 'self' and belong inside CogitronOmega.__init__;
+# at module level we guard them to avoid NameError and keep the file syntactically valid.
+def start_upload_gui(self):
+        if hasattr(self, "enhanced_core"):
+            return self.enhanced_core.start_upload_gui()
+        else:
+            print(f"[{self.name}] GUI handler not available.")
+            return {"success": False, "error": "enhanced_core not initialized"}
+
+    # --------------------------
+    # File learning delegation
+    # --------------------------
+def learn_from_file(self, file_path):
+        if hasattr(self, "enhanced_core"):
+            return self.enhanced_core.learn_from_file(file_path)
+        else:
+            print(f"[{self.name}] Learning system not available.")
+            return {"success": False, "error": "enhanced_core not initialized"}
+def think(self, text):
         """Internal reasoning engine."""
         reasoning_steps = []
 
@@ -5778,7 +5854,7 @@ class CogitronOmega(AIUnit):
             "answer": final_answer
         }
 
-    def self_reflect(self, thinking_trace):
+def self_reflect(self, thinking_trace):
         """Learn from previous reasoning."""
         lesson = "Next time, avoid overcomplicating similar inputs."
 
@@ -5795,7 +5871,7 @@ class CogitronOmega(AIUnit):
             # Silently ignore storage failures to keep reflection non-fatal
             pass
         return lesson
-    def respond(self, user_input):
+def respond(self, user_input):
        result = self.think(user_input)
        lesson = self.self_reflect(result["thinking"])
 
@@ -6727,282 +6803,102 @@ def _process_simulation_command(self, user_input):
 
 # ==================== COGITRON OMEGA INTERFACE ====================
 
+import time
+import logging
+import threading
+import tkinter as tk
+from tkinter import filedialog, scrolledtext
+
+# ==========================
+# INTERFACE FOR COGITRON OMEGA
+# ==========================
 class CogitronOmegaInterface:
     """Main interface for the ultimate fusion AI with all components"""
-    
-    def __init__(self):
-        print("""
-🧠⚡ COGITRON OMEGA - ULTIMATE FUSION AI
-========================================
 
-    COMPLETE CUTTING-EDGE ARCHITECTURE DEPLOYED:
-    • ENHANCED SELF-LEARNING CORE (Original 1308-line system)
-    • SUPREME COMMAND ARCHITECTURE (Cogitron Prime + Sub-AIs)  
-    • ENHANCED COGNITIVE MEMORY MATRIX (Shared hierarchical memory)
-    • HIERARCHICAL AI UNIT SYSTEM (Modular AI architecture)
-    • SIMULATION AREA (Sandboxed testing environment)
-    • METACOGNITIVE SUPERVISOR (Thinking about thinking)
-    • EMOTIONAL INTELLIGENCE ENGINE (Emotion modeling, theory of mind)
-    • QUANTUM COGNITIVE PROCESSOR (Exponential reasoning)
-    • ADVANCED SIMULATION ENGINE (Emergence, prediction)
-    • ADVANCED NLU (Deep semantic understanding, humor, sarcasm, metaphor)
-    • ETHICAL REASONING SYSTEM (Value alignment, dilemma resolution)
-    • INNOVATION ENGINE (Breakthrough ideas, technology simulation)
-    • CROSS-MODAL LEARNING (Multi-modal patterns, knowledge transfer)
-    • PERFORMANCE OPTIMIZATION SYSTEM (Fast, efficient responses)
-    • INTERACTIVE DEMONSTRATIONS (Capability showcases)
-    • ADVANCED SAFETY PROTOCOLS (Multi-layer containment)
-    • KNOWLEDGE GRAPH ENHANCEMENT (Semantic network analysis)
-    • ADVANCED ERROR RECOVERY (Graceful failure handling)
-    • ADVANCED FILE UPLOAD SYSTEM (Encryption, GUI, API)
-    • AUTONOMOUS LEARNING SYSTEMS (Continuous self-improvement)
-    • FUSION COMMUNICATION NETWORK (Cross-system coordination)
+def __init__(self, name="OmegaInterface"):
+        self.name = name
+        print(f"[{self.name}] Initializing CogitronOmegaInterface...")
 
-    ALL CUTTING-EDGE COMPONENTS INTEGRATED INTO SINGLE ULTIMATE AI!
-        """)
-        
-        self.omega_ai = CogitronOmega()
-    
-    def process_command(self, user_input):
-        """Process commands for the ultimate fusion AI"""
-        return self.omega_ai.process_omega_command(user_input)
+        # Initialize core AI
+        self.omega_ai = CogitronOmega(name="Omega")
 
-    def run(self):
-        """Main Omega AI operation with all components"""
-        print("""
-🎯 COGITRON OMEGA COMMAND INTERFACE ACTIVE
+        # Ensure all essential subsystems exist
+        if not hasattr(self.omega_ai, "enhanced_core") or self.omega_ai.enhanced_core is None:
+            if hasattr(self.omega_ai, "ultimate_core"):
+                self.omega_ai.enhanced_core = self.omega_ai.ultimate_core
+            else:
+                self.omega_ai.enhanced_core = UltimateEnhancedCore()
 
-I am the ULTIMATE FUSION AI with ALL cutting-edge components:
-✅ Enhanced Self-Learning (File processing, reasoning, creativity)
-✅ Supreme Architecture (Command hierarchy, autonomous sub-AIs)  
-✅ Enhanced Cognitive Memory (Hierarchical knowledge storage)
-✅ Hierarchical AI Units (Modular, spawnable AI components)
-✅ Simulation Area (Safe sandboxed testing environment)
-✅ Metacognitive Supervisor (Thinking about thinking processes)
-✅ Emotional Intelligence (Emotion modeling, theory of mind)
-✅ Quantum Cognitive Processor (Exponential reasoning power)
-✅ Advanced Simulation Engine (Emergence detection, prediction)
-✅ Advanced NLU (Deep semantic understanding, humor, sarcasm)
-✅ Ethical Reasoning (Value alignment, ethical decision-making)
-✅ Innovation Engine (Breakthrough ideas, technology simulation)
-✅ Cross-Modal Learning (Multi-modal patterns, knowledge transfer)
-✅ Performance Optimization (Fast, efficient responses)
-✅ Interactive Demonstrations (Learning, creativity, ethics)
-✅ Advanced Safety Protocols (Multi-layer containment)
-✅ Knowledge Graph Enhancement (Semantic network analysis)
-✅ Advanced Error Recovery (Graceful failure handling)
-✅ Advanced File Upload System (Encryption, GUI, API)
-✅ Continuous Fusion Learning (Cross-system optimization)
+        # Defensive creation for submodules to avoid AttributeError
+        for attr in [
+            "emotional_intelligence", "quantum_processor", "advanced_nlu",
+            "metacognitive_supervisor", "ethical_reasoning",
+            "innovation_engine", "cross_modal_learning",
+            "advanced_simulation"
+        ]:
+            if not hasattr(self.omega_ai.enhanced_core, attr):
+                setattr(self.omega_ai.enhanced_core, attr, type('Stub', (), {})())
 
-Type 'help' for the complete command list (100+ commands available!)
-Type 'analyze nuance: your text' for deep semantic analysis
-Type 'ethical assessment: your action' for ethical impact assessment
-Type 'generate breakthrough: constraints' for innovative ideas
-Type 'cross modal learn: data' for multi-modal learning
-        """)
-        
+        print(f"[{self.name}] CogitronOmega core initialized successfully.")
+
+def process_command(self, user_input):
+        """Process any command intelligently, forwarding to Omega AI or GUI"""
+        cmd = user_input.lower().strip()
+
+        # GUI commands
+        gui_triggers = ["start upload gui", "upload gui", "upload file", "file gui"]
+        if any(trigger in cmd for trigger in gui_triggers):
+            try:
+                start_upload_gui(self.omega_ai.enhanced_core)
+                return "[Omega] Upload GUI launched."
+            except Exception as e:
+                return f"[Omega] GUI handler not available: {e}"
+
+        # Default help/status commands
+        if cmd in ["help", "commands"]:
+            return "[Omega] Commands: start upload gui, help, status, omega shutdown, learn file:<path>, reason about:<topic>, analyze nuance:<text>, generate breakthrough:<constraints>, etc."
+        if cmd == "status":
+            return "[Omega] Systems nominal. Autonomous: ACTIVE."
+
+        # Forward to Omega AI processor
+        if hasattr(self.omega_ai, "process_omega_command"):
+            try:
+                return self.omega_ai.process_omega_command(user_input)
+            except Exception as e:
+                return f"[Omega] Error processing command: {e}"
+
+        return "[Omega] Unknown command."
+
+def run(self):
+        """Main interface loop for user commands"""
+        print("\n🎯 COGITRON OMEGA COMMAND INTERFACE ACTIVE")
+        print("Type 'omega shutdown' to exit.")
+        print("Type 'start upload gui' to open the file upload GUI.")
+
         while True:
             try:
                 user_input = input("\n🧠⚡ Omega Command: ").strip()
-                
+
                 if user_input.lower() == 'omega shutdown':
                     print("🧠⚡ Cogitron Omega securing all fusion systems...")
-                    print("✅ Enhanced core saved")
-                    print("✅ Supreme architecture preserved") 
-                    print("✅ Cognitive memory matrix archived")
-                    print("✅ Hierarchical AI units secured")
-                    print("🧪 Simulation Area safely contained")
-                    print("🤔 Metacognitive supervisor data stored")
-                    print("😊 Emotional intelligence profiles saved")
-                    print("⚛️  Quantum states preserved")
-                    print("🔮 Advanced simulation data archived")
-                    print("🎭 Advanced NLU models stored")
-                    print("⚖️ Ethical reasoning frameworks saved")
-                    print("💡 Innovation engine patterns archived")
-                    print("🔄 Cross-modal learning bridges preserved")
-                    print("⚡ Performance optimization data stored")
-                    print("🔒 Safety protocols maintained")
-                    print("🕸️ Knowledge graph preserved")
-                    print("📁 File upload system secured")
-                    print("🚀 All systems ready for reactivation!")
+                    print("✅ All core and advanced components saved")
+                    print("🚀 Ready for reactivation!")
                     break
-                
+
                 response = self.process_command(user_input)
-                
-                # Pretty print responses
-                if isinstance(response, dict):
-                    print("🧠⚡ Omega Response:")
-                    for key, value in response.items():
-                        print(f"   {key}: {value}")
-                else:
-                    print(f"🧠⚡ Omega: {response}")
-                
+                print(f"🧠⚡ Omega: {response}")
+
             except KeyboardInterrupt:
                 print("\n⚡ Emergency fusion containment initiated!")
                 break
             except Exception as e:
                 print(f"❌ Fusion processing error: {e}")
-                # Use advanced error recovery
-                recovery_result = self.omega_ai.enhanced_core.error_recovery.handle_error(
-                    {"error_type": "interface_error", "error": str(e)}
-                )
-                print(f"🔄 Recovery attempt: {recovery_result.get('recovery_strategy', 'unknown')}")
-import tkinter as tk
-from tkinter import filedialog, messagebox, scrolledtext
-
-def start_upload_gui(core):
-    """
-    Launch a multi-file upload GUI for UltimateEnhancedCore.
-    core: instance of UltimateEnhancedCore (omega_system.omega_ai.enhanced_core)
-    """
-    def upload_files():
-        file_paths = filedialog.askopenfilenames(
-            title="Select files to upload",
-            filetypes=[
-                ("Text files", "*.txt"),
-                ("PDF files", "*.pdf"),
-                ("Images", "*.jpg *.jpeg *.png"),
-                ("Audio files", "*.mp3 *.wav"),
-                ("All files", "*.*")
-            ]
-        )
-
-        if not file_paths:
-            return
-
-        for file_path in file_paths:
-            try:
-                result = core.learn_from_file(file_path)
-                log_msg = f"✅ {file_path}\n"
-                log_msg += f"   Primary Topic: {result['primary_topic']}\n"
-                log_msg += f"   Learning Score: {result['learning_score']:.2f}\n"
-                log_msg += f"   Key Phrases: {', '.join(result['enhanced_analysis']['key_phrases'][:5])}\n"
-                log_msg += "-"*50 + "\n"
-                log_area.insert(tk.END, log_msg)
-                log_area.yview(tk.END)  # Auto-scroll to the bottom
-            except Exception as e:
-                log_area.insert(tk.END, f"❌ Failed to process {file_path}: {e}\n")
-                log_area.yview(tk.END)
-
-    # Main GUI window
-    root = tk.Tk()
-    root.title("Ultimate AI File Upload")
-    root.geometry("600x400")
-
-    # Instructions label
-    label = tk.Label(root, text="Upload one or more files for AI processing:", font=("Arial", 12))
-    label.pack(pady=10)
-
-    # Upload button
-    upload_btn = tk.Button(root, text="Select Files", font=("Arial", 12), command=upload_files)
-    upload_btn.pack(pady=10)
-
-    # Scrollable log area
-    log_area = scrolledtext.ScrolledText(root, width=70, height=15, font=("Courier", 10))
-    log_area.pack(pady=10)
-    log_area.insert(tk.END, "📂 Upload log initialized...\n")
-
-    root.mainloop()
-
-# ==================== LAUNCH ULTIMATE COGITRON OMEGA ====================
-
+        self.process_command(user_input)
+# ===============================
+# LAUNCH
+# ===============================
 if __name__ == "__main__":
-    # Set up logging
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
-    print("🚀 INITIATING COGITRON OMEGA COMPLETE FUSION SEQUENCE...")
-    time.sleep(2)
-    
-    fusion_steps = [
-        "Loading Enhanced Self-Learning Core...",
-        "Initializing Supreme Command Architecture...",
-        "Activating Enhanced Cognitive Memory Matrix...",
-        "Deploying Hierarchical AI Unit System...", 
-        "Securing Simulation Area Sandbox...",
-        "Starting Metacognitive Supervisor...",
-        "Initializing Emotional Intelligence Engine...",
-        "Activating Quantum Cognitive Processor...",
-        "Loading Advanced Simulation Engine...",
-        "Integrating Advanced NLU System...",
-        "Initializing Ethical Reasoning System...",
-        "Activating Innovation Engine...",
-        "Loading Cross-Modal Learning...",
-        "Integrating Performance Optimization System...",
-        "Loading Interactive Demonstration Modules...",
-        "Activating Advanced Safety Protocols...",
-        "Building Knowledge Graph Enhancement...",
-        "Configuring Advanced Error Recovery...",
-        "Setting Up Advanced File Upload System...",
-        "Establishing Fusion Communication Network...",
-        "Synchronizing Cross-System Knowledge...",
-        "Activating Complete Fusion Learning Cycles..."
-    ]
-    
-    for step in fusion_steps:
-        print(f"🔧 {step}")
-        time.sleep(1)
-        # ==================== ULTIMATE ENHANCED CORE SELF-HEALING LOOP ====================
-
-    # Core subsystems
-    # NOTE: Module-level 'self' checks are invalid and would raise NameError here;
-    # initialization of instances and their components is handled inside
-    # CogitronOmegaInterface() / CogitronOmega() constructors at runtime,
-    # so skip these module-level guards to avoid referencing an undefined 'self'.
-    # (If you need to perform health-checks here, do so on an actual instance
-    #  such as `omega_system` after it has been constructed.)
-    pass
-
-
-# ==================== OMEGA COMMAND LOOP WITH SELF-HEALING ====================
-
-omega_system = CogitronOmegaInterface()
-
-while True:
-    try:
-        user_input = input("\n🧠⚡ Omega Command: ").strip()
-
-        if user_input.lower() == 'omega shutdown':
-            print("🧠⚡ Cogitron Omega securing all fusion systems...")
-            print("✅ All core and advanced components saved")
-            print("🚀 Ready for reactivation!")
-            break
-
-        # Ensure all components are available
-        try:
-            omega_system.omega_ai.enhanced_core.ensure_core_components()
-        except Exception as e:
-            print(f"⚠️ Core restoration failed: {e}")
-
-        # Process command
-        response = omega_system.process_command(user_input)
-
-        # Pretty print responses
-        if isinstance(response, dict):
-            print("🧠⚡ Omega Response:")
-            for key, value in response.items():
-                print(f"   {key}: {value}")
-        else:
-            print(f"🧠⚡ Omega: {response}")
-
-    except KeyboardInterrupt:
-        print("\n⚡ Emergency fusion containment initiated!")
-        break
-    except Exception as e:
-        print(f"❌ Fusion processing error: {e}")
-        # Use advanced error recovery
-        try:
-            recovery_result = omega_system.omega_ai.enhanced_core.error_recovery.handle_error(
-                {"error_type": "interface_error", "error": str(e)}
-            )
-            print(f"🔄 Recovery attempt: {recovery_result.get('recovery_strategy', 'unknown')}")
-        except Exception as ee:
-            print(f"⚠️ Recovery failed: {ee}")
-# Example, after initialization
-start_upload_gui(omega_system.omega_ai.enhanced_core)
-
-
-print("✅ ALL CUTTING-EDGE SYSTEMS AND COMPONENTS FUSED SUCCESSFULLY!")
-print("🧠⚡ COGITRON OMEGA WITH ALL ADVANCED COMPONENTS OPERATIONAL!")
-
-omega_core = UltimateEnhancedCore()
-omega_core.start_upload_gui()
+    logging.basicConfig(level=logging.INFO)
+    print("🚀 INITIATING COGITRON OMEGA INTERFACE...")
+    omega_system = CogitronOmegaInterface()
+    omega_system.run()
